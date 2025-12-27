@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Clear Cache & Reload</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+        }
+
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔄 Clear Cache & Reload</h1>
+        <p>Click the button below to clear browser cache and reload with the latest code:</p>
+        <button onclick="clearAndReload()">Clear Cache & Reload Now</button>
+        <div class="info">
+            <p>This will force your browser to download fresh JavaScript files.</p>
+            <p><strong>Or press: Ctrl + Shift + R</strong></p>
+        </div>
+    </div>
+
+    <script>
+        function clearAndReload() {
+            // Clear service worker cache
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+
+            // Clear session storage
+            sessionStorage.clear();
+
+            // Reload with cache bypass
+            window.location.href = 'index.html?nocache=' + Date.now();
+        }
+
+        // Auto-redirect after 3 seconds
+        setTimeout(() => {
+            alert('Auto-reloading in 3 seconds...');
+            clearAndReload();
+        }, 3000);
+    </script>
+</body>
+
+</html>

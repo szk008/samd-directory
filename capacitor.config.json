@@ -1,0 +1,31 @@
+{
+    "appId": "com.samd.directory",
+    "appName": "SAMD Directory",
+    "webDir": "www",
+    "server": {
+        "url": "http://192.168.1.4:8080",
+        "cleartext": true
+    },
+    "android": {
+        "buildOptions": {
+            "keystorePath": "",
+            "keystorePassword": "",
+            "keystoreAlias": "",
+            "keystoreAliasPassword": "",
+            "releaseType": "APK"
+        }
+    },
+    "plugins": {
+        "SplashScreen": {
+            "launchShowDuration": 2000,
+            "backgroundColor": "#0fb89b",
+            "androidSplashResourceName": "splash",
+            "androidScaleType": "CENTER_CROP",
+            "showSpinner": false
+        },
+        "StatusBar": {
+            "style": "dark",
+            "backgroundColor": "#0fb89b"
+        }
+    }
+}

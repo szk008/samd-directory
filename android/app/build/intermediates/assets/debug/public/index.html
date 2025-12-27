@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; connect-src 'self' https: http://localhost:* http://10.0.2.2:*;">
+    <meta name="description"
+        content="SAMD - South Gujarat Association of Muslim Doctors Directory. Find verified medical professionals, specialists, and healthcare providers in South Gujarat.">
+    <meta name="keywords"
+        content="doctors, medical directory, SAMD, South Gujarat, Muslim doctors, healthcare, specialists">
+    <meta name="author" content="SAMD - South Gujarat Association of Muslim Doctors">
+    <meta name="theme-color" content="#0fb89b">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SAMD Medical Directory | South Gujarat Muslim Doctors">
+    <meta property="og:description"
+        content="Find verified medical professionals in South Gujarat. 200+ doctors across 20+ specialties.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/og-image.jpg">
+
+    <title>SAMD Directory | Find Verified Doctors in South Gujarat</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Header -->
+            <div class="sidebar-header">
+                <div class="logo-section">
+                    <div class="logo-icon">🏥</div>
+                    <div class="logo-text">
+                        <h1>SAMD Directory</h1>
+                        <p>South Gujarat Muslim Doctors</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="javascript:void(0)" class="auth-btn" id="authBtn" title="Login / Register"
+                        style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                        <span id="authBtnText" style="margin-left: 8px;">Login</span>
+                    </a>
+                    <a href="/admin" class="auth-btn" title="Admin Portal"
+                        style="text-decoration: none; display: flex; align-items: center; justify-content: center; margin-left: 8px; background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200);">
+                        <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+                        <span style="margin-left: 8px;">Admin</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
+                    <input type="text" id="searchInput" placeholder="Search doctors, specialties, hospitals..."
+                        autocomplete="off">
+                    <button class="search-clear" id="searchClear" title="Clear search">
+                        <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs (Login Required) -->
+            <div class="nav-tabs" id="navTabs" style="padding: var(--space-3); display: none;">
+                <button class="nav-tab" id="editProfileTab" title="Edit Your Profile">
+                    <i data-lucide="user-circle" style="width: 16px; height: 16px;"></i>
+                    <span>Edit Profile</span>
+                </button>
+                <button class="nav-tab" id="addDoctorTabNav" title="Add New Doctor">
+                    <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>
+                    <span>Add Doctor</span>
+                </button>
+                <button class="nav-tab" id="adminLoginTab" title="Admin Panel">
+                    <i data-lucide="shield" style="width: 16px; height: 16px;"></i>
+                    <span>Admin</span>
+                </button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="filter-row"
+                style="padding: 0 var(--space-3); display: flex; gap: 8px; margin-bottom: 12px; margin-top: 12px;">
+                <select id="districtFilter" class="form-select"
+                    style="flex: 1; min-width: 120px; padding: 8px; border-radius: 8px; border: 1px solid var(--gray-200);">
+                    <option value="">All Districts</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Amreli">Amreli</option>
+                    <option value="Anand">Anand</option>
+                    <option value="Aravalli">Aravalli</option>
+                    <option value="Banaskantha">Banaskantha</option>
+                    <option value="Bharuch">Bharuch</option>
+                    <option value="Bhavnagar">Bhavnagar</option>
+                    <option value="Botad">Botad</option>
+                    <option value="Chhota Udaipur">Chhota Udaipur</option>
+                    <option value="Dahod">Dahod</option>
+                    <option value="Dang">Dang</option>
+                    <option value="Devbhoomi Dwarka">Devbhoomi Dwarka</option>
+                    <option value="Gandhinagar">Gandhinagar</option>
+                    <option value="Gir Somnath">Gir Somnath</option>
+                    <option value="Jamnagar">Jamnagar</option>
+                    <option value="Junagadh">Junagadh</option>
+                    <option value="Kachchh">Kachchh</option>
+                    <option value="Kheda">Kheda</option>
+                    <option value="Mahisagar">Mahisagar</option>
+                    <option value="Mehsana">Mehsana</option>
+                    <option value="Morbi">Morbi</option>
+                    <option value="Narmada">Narmada</option>
+                    <option value="Navsari">Navsari</option>
+                    <option value="Panchmahal">Panchmahal</option>
+                    <option value="Patan">Patan</option>
+                    <option value="Porbandar">Porbandar</option>
+                    <option value="Rajkot">Rajkot</option>
+                    <option value="Sabarkantha">Sabarkantha</option>
+                    <option value="Surat">Surat</option>
+                    <option value="Surendranagar">Surendranagar</option>
+                    <option value="Tapi">Tapi</option>
+                    <option value="Vadodara">Vadodara</option>
+                    <option value="Valsad">Valsad</option>
+                </select>
+                <select id="areaFilter" class="form-select"
+                    style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--gray-200);">
+                    <option value="">All Areas</option>
+                </select>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">
+                    <i data-lucide="list" style="width: 16px; height: 16px;"></i>
+                    All
+                </button>
+                <button class="filter-tab" data-filter="nearby">
+                    <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                    Nearby
+                </button>
+                <button class="filter-tab" data-filter="verified">
+                    <i data-lucide="badge-check" style="width: 16px; height: 16px;"></i>
+                    Verified
+                </button>
+            </div>
+
+
+
+            <!-- Specialty Filters -->
+            <div class="specialty-filters" id="specialtyFilters">
+                <button class="specialty-chip active" data-specialty="all">
+                    <span class="chip-dot" style="background: var(--primary-500);"></span>
+                    All Specialties
+                </button>
+                <!-- Specialty chips will be dynamically added -->
+            </div>
+
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stats-info">
+                    <span class="stats-count" id="doctorCount">0</span>
+                    <span class="stats-label">Doctors</span>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="list" title="List View">
+                        <i data-lucide="list" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="view-btn" data-view="grid" title="Grid View">
+                        <i data-lucide="grid-3x3" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
+            </div>
+
+
+
+            <!-- Doctor List -->
+            <div class="doctor-list" id="doctorList">
+                <!-- Doctor cards will be dynamically added -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i data-lucide="users" class="empty-state-icon"></i>
+                    <h3>No doctors found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Map Container -->
+        <main class="map-container">
+            <div id="map"></div>
+
+            <!-- Location Filter Panel -->
+            <div class="location-filter-panel" id="locationFilterPanel">
+                <i data-lucide="crosshair" style="width: 18px; height: 18px; color: var(--primary-500);"></i>
+                <span style="font-size: var(--text-sm); font-weight: 500;">Within</span>
+                <select class="radius-select" id="radiusSelect">
+                    <option value="1">1 km</option>
+                    <option value="5" selected>5 km</option>
+                    <option value="10">10 km</option>
+                    <option value="25">25 km</option>
+                    <option value="50">50 km</option>
+                </select>
+                <button class="map-control-btn" id="clearLocationFilter" title="Clear location filter"
+                    style="width: 32px; height: 32px;">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-control-btn toggle-sidebar-btn" id="toggleSidebar" title="Toggle Sidebar">
+                    <i data-lucide="panel-left" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="map-control-btn" id="themeToggle" title="Toggle Dark Mode">
+                    <i data-lucide="moon" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="map-control-btn" id="locateBtn" title="Find Doctors Near Me">
+                    <i data-lucide="crosshair" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="map-control-btn" id="resetViewBtn" title="Show All Doctors">
+                    <i data-lucide="maximize-2" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button class="map-control-btn" id="refreshBtn" title="Refresh Data">
+                    <i data-lucide="refresh-cw" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+
+            <!-- Ad Zone - Map Bottom -->
+            <div class="ad-zone ad-zone-map-bottom" id="adMapBottom" data-ad-slot="map-bottom"></div>
+        </main>
+
+        <!-- Creator Footer -->
+        <footer class="creator-footer" id="creatorFooter">
+            <span>Created by</span>
+            <a href="tel:9879520091" class="creator-name" id="creatorName">Dr. Shahnavaz Kanuga</a>
+        </footer>
+
+        <!-- Floating Action Button -->
+        <button class="fab" id="addDoctorBtn" title="Add New Doctor">
+            <i data-lucide="plus" style="width: 28px; height: 28px;"></i>
+        </button>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeAuthModal">
+                <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+            </button>
+
+            <!-- Phone Step -->
+            <div id="phoneStep">
+                <div class="modal-header">
+                    <div class="modal-icon">
+                        <i data-lucide="smartphone" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h2 class="modal-title">Welcome to SAMD</h2>
+                    <p class="modal-subtitle">Login with your phone number to save favorites and access premium features
+                    </p>
+                </div>
+
+                <form class="modal-form" id="phoneForm">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <div class="phone-input-group">
+                            <input type="text" class="form-input country-code" value="+91" readonly>
+                            <input type="tel" class="form-input" id="phoneInput" placeholder="9876543210"
+                                pattern="[0-9]{10}" maxlength="10" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="sendOtpBtn" style="width: 100%;">
+                        <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+                        Send OTP
+                    </button>
+                </form>
+
+                <div class="modal-footer">
+                    <p>By continuing, you agree to our Terms of Service</p>
+                </div>
+            </div>
+
+            <!-- OTP Step -->
+            <div id="otpStep" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">
+                        <i data-lucide="key-round" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h2 class="modal-title">Enter OTP</h2>
+                    <p class="modal-subtitle">We've sent a 6-digit code to <span id="displayPhone"></span></p>
+                </div>
+
+                <form class="modal-form" id="otpForm">
+                    <div class="form-group">
+                        <div class="otp-input-group">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                            <input type="text" class="form-input otp-digit" maxlength="1" inputmode="numeric"
+                                pattern="[0-9]">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="verifyOtpBtn" style="width: 100%;" disabled>
+                        <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+                        Verify & Login
+                    </button>
+                </form>
+
+                <div class="modal-footer">
+                    <button class="btn btn-text" id="resendOtpBtn">Didn't receive code? Resend OTP</button>
+                    <button class="btn btn-text" id="changePhoneBtn">Change phone number</button>
+                </div>
+            </div>
+
+            <!-- Logged In Step -->
+            <div id="loggedInStep" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon" style="background: var(--success);">
+                        <i data-lucide="check" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h2 class="modal-title">Welcome, <span id="displayUserName">User</span></h2>
+                    <p class="modal-subtitle">You are logged in.</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                    <a href="/dashboard" class="btn btn-primary"
+                        style="text-decoration: none; text-align: center; justify-content: center;">
+                        <i data-lucide="edit-3" style="width: 18px; height: 18px;"></i>
+                        Edit Profile / Dashboard
+                    </a>
+
+                    <button class="btn btn-secondary" id="viewFavoritesBtn" style="width: 100%;">
+                        <i data-lucide="heart" style="width: 18px; height: 18px;"></i>
+                        View Favorites
+                    </button>
+
+                    <button class="btn btn-secondary" id="logoutBtn" style="width: 100%;">
+                        <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Loading doctors...</p>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/gujarat_data.js"></script>
+    <script src="js/data.js?v=6"></script>
+    <script type="module" src="js/mobile.js?v=20251226"></script>
+    <script src="js/auth.js?v=20251226"></script>
+    <script src="js/ads.js?v=20251226"></script>
+    <script src="js/favorites.js?v=20251226"></script>
+    <script src="js/map.js?v=4"></script>
+    <script src="js/directory.js?v=20251226"></script>
+    <script src="js/navigation.js?v=20251226"></script>
+    <script src="js/app.js?v=20251226"></script>
+</body>
+
+</html>

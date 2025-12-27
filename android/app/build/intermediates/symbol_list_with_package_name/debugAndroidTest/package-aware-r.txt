@@ -1,0 +1,3 @@
+com.samd.directory.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SAMD Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet for Map Picker -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        #picker-map {
+            height: 400px;
+            width: 100%;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-900 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl font-bold">SAMD Dashboard</h1>
+                <a href="index.html"
+                    class="flex items-center bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded text-sm">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to Directory
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="navWelcome">Welcome...</span>
+                <a href="#" onclick="handleLogout()"
+                    class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+
+        <!-- ADMIN VIEW: User List -->
+        <div id="admin-panel" class="mb-8 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">User Management</h2>
+                    <a href="admin.html"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center shadow-lg transform transition hover:scale-105">
+                        <i class="fas fa-cogs mr-2"></i> Open Full Admin Panel
+                    </a>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="editMyProfile()"
+                        class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">
+                        <i class="fas fa-user-edit mr-2"></i> Edit My Profile
+                    </button>
+                    <button onclick="editNew()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i> Add Doctor
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Hospital</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Phone</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EDITOR MODAL / SECTION -->
+        <div id="editor-section" class="max-w-4xl mx-auto hidden">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                    <h2 class="text-xl font-bold text-gray-800" id="editorTitle">Edit Profile</h2>
+                    <button id="closeEditorBtn" onclick="closeEditor()"
+                        class="text-gray-500 hover:text-gray-700 hidden">
+                        <i class="fas fa-times fa-lg"></i>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- FORM -->
+                        <div>
+                            <form id="profileForm" onsubmit="saveProfile(event)">
+                                <input type="hidden" id="docId">
+
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                                    <input type="text" id="name" class="w-full border p-2 rounded" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+                                    <input type="text" id="phone" class="w-full border p-2 rounded">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Qualification</label>
+                                    <input type="text" id="qualification" class="w-full border p-2 rounded">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Hospital</label>
+                                    <input type="text" id="hospital" class="w-full border p-2 rounded">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Specialty</label>
+                                    <input type="text" id="specialty" class="w-full border p-2 rounded">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                                    <textarea id="address" class="w-full border p-2 rounded" rows="3"></textarea>
+                                </div>
+
+                                <input type="hidden" id="lat" value="21.1702">
+                                <input type="hidden" id="lng" value="72.8311">
+
+                                <div class="flex justify-end gap-2 mt-6">
+                                    <button type="button" id="cancelBtn" onclick="closeEditor()"
+                                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded hidden">Cancel</button>
+                                    <button type="submit"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save
+                                        Changes</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- MAP PICKER -->
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-700 mb-2">Location</h3>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-4">
+                                <p class="text-sm text-blue-700">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    <strong>Drag the marker</strong> on the map to set the exact location.
+                                </p>
+                            </div>
+
+                            <div id="picker-map" class="shadow-inner border border-gray-300"></div>
+
+                            <div
+                                class="mt-4 grid grid-cols-2 gap-4 text-sm bg-gray-50 p-2 rounded font-mono text-gray-600">
+                                <div>Lat: <span id="dispLat"></span></div>
+                                <div>Lng: <span id="dispLng"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // API Base URL - Change this to production IP if running on phone!
+        // For local development on emulator use 10.0.2.2:5000
+        const API_BASE = ''; // Empty means relative (works if hosting wrapper matches)
+
+        let currentUser = null;
+        let map, marker;
+
+        async function initDashboard() {
+            try {
+                const res = await fetch('/api/current-user');
+                if (!res.ok) throw new Error('Not logged in');
+
+                currentUser = await res.json();
+
+                // Update specific UI
+                document.getElementById('navWelcome').innerText = `Welcome, ${currentUser.name} (${currentUser.role})`;
+
+                if (currentUser.role === 'admin') {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    document.getElementById('editor-section').classList.add('hidden', 'fixed', 'inset-0', 'bg-black', 'bg-opacity-50', 'z-50', 'flex', 'items-center', 'justify-center', 'p-4');
+                    document.getElementById('editor-section').classList.remove('max-w-4xl');
+
+                    document.getElementById('cancelBtn').classList.remove('hidden');
+                    document.getElementById('closeEditorBtn').classList.remove('hidden');
+
+                    loadAdminTable();
+                } else {
+                    // Regular Doctor - Show Editor immediately
+                    document.getElementById('editor-section').classList.remove('hidden');
+                    loadMyProfile();
+                    initMap();
+                }
+
+            } catch (e) {
+                console.error(e);
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function loadMyProfile() {
+            // Already fetched in initDashboard? No, that's just basic user info.
+            // We need full profile details from /api/current-user or doctor table
+            if (currentUser.doctor_id) {
+                const docRes = await fetch(`/api/doctors`);
+                if (docRes.ok) {
+                    const data = await docRes.json();
+                    const myDoc = data.doctors.find(d => d.id === currentUser.doctor_id);
+                    if (myDoc) editDoctor(myDoc);
+                }
+            }
+        }
+
+        // ... Copied Logic ...
+
+        function initMap() {
+            if (map) return;
+
+            const initialLat = parseFloat(document.getElementById('lat').value) || 21.1702;
+            const initialLng = parseFloat(document.getElementById('lng').value) || 72.8311;
+
+            setTimeout(() => {
+                map = L.map('picker-map').setView([initialLat, initialLng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+                marker.on('dragend', function (e) {
+                    updateCoords(e.target.getLatLng());
+                });
+
+                map.on('click', function (e) {
+                    marker.setLatLng(e.latlng);
+                    updateCoords(e.latlng);
+                });
+
+                updateCoords({ lat: initialLat, lng: initialLng });
+                map.invalidateSize();
+            }, 100);
+        }
+
+        function updateCoords(pos) {
+            document.getElementById('lat').value = pos.lat.toFixed(6);
+            document.getElementById('lng').value = pos.lng.toFixed(6);
+            document.getElementById('dispLat').innerText = pos.lat.toFixed(6);
+            document.getElementById('dispLng').innerText = pos.lng.toFixed(6);
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('docId').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                qualification: document.getElementById('qualification').value,
+                hospital: document.getElementById('hospital').value,
+                specialty: document.getElementById('specialty').value,
+                address: document.getElementById('address').value,
+                lat: document.getElementById('lat').value,
+                lng: document.getElementById('lng').value
+            };
+
+            const res = await fetch('/api/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert('Saved successfully!');
+                if (currentUser.role === 'admin') {
+                    closeEditor();
+                    loadAdminTable();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                alert('Error updating profile');
+            }
+        }
+
+        function loadAdminTable() {
+            fetch('/api/doctors')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('userTableBody');
+                    tbody.innerHTML = data.doctors.map(d => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${d.name}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">${d.hospital || '-'}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${d.phone}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick='editDoctor(${JSON.stringify(d).replace(/'/g, "&#39;")})' class="text-indigo-600 hover:text-indigo-900 font-bold">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                });
+        }
+
+        function editDoctor(d) {
+            document.getElementById('docId').value = d.id;
+            document.getElementById('name').value = d.name;
+            document.getElementById('phone').value = d.phone;
+            document.getElementById('qualification').value = d.qualification || '';
+            document.getElementById('hospital').value = d.hospital || '';
+            document.getElementById('specialty').value = d.specialty || '';
+            document.getElementById('address').value = d.address || '';
+            document.getElementById('lat').value = d.lat || 21.1702;
+            document.getElementById('lng').value = d.lng || 72.8311;
+
+            document.getElementById('editor-section').classList.remove('hidden');
+
+            if (map) {
+                const newLtLn = [d.lat || 21.1702, d.lng || 72.8311];
+                map.setView(newLtLn, 15);
+                marker.setLatLng(newLtLn);
+                updateCoords({ lat: newLtLn[0], lng: newLtLn[1] });
+                setTimeout(() => map.invalidateSize(), 200);
+            } else {
+                initMap();
+            }
+        }
+
+        function editNew() {
+            document.getElementById('profileForm').reset();
+            document.getElementById('docId').value = '';
+            document.getElementById('editor-section').classList.remove('hidden');
+            initMap();
+        }
+
+        async function editMyProfile() {
+            loadMyProfile();
+        }
+
+        function closeEditor() {
+            document.getElementById('editor-section').classList.add('hidden');
+        }
+
+        function handleLogout() {
+            fetch('/logout').then(() => window.location.href = 'index.html');
+        }
+
+        // Start
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,327 @@
+/* SAMD Directory - Premium Design System */
+/* World-Class Medical Directory Variables */
+
+:root {
+    /* ========== BRAND COLORS ========== */
+    /* Primary - Medical Teal */
+    --primary-50: #effcf9;
+    --primary-100: #c6f7ec;
+    --primary-200: #8df0db;
+    --primary-300: #4de4c6;
+    --primary-400: #22d4b1;
+    --primary-500: #0fb89b;
+    --primary-600: #0a9680;
+    --primary-700: #0d786a;
+    --primary-800: #0f5f56;
+    --primary-900: #114e47;
+    --primary-950: #062f2c;
+
+    /* Secondary - Coral Accent */
+    --secondary-50: #fff5f2;
+    --secondary-100: #ffe9e3;
+    --secondary-200: #ffd7cc;
+    --secondary-300: #ffb8a6;
+    --secondary-400: #ff8c70;
+    --secondary-500: #f86545;
+    --secondary-600: #e54726;
+    --secondary-700: #c1381c;
+    --secondary-800: #9f321c;
+    --secondary-900: #842e1d;
+    --secondary-950: #48140b;
+
+    /* Neutral - Slate */
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --gray-950: #020617;
+
+    /* ========== SEMANTIC COLORS ========== */
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    --error: #ef4444;
+    --error-light: #fee2e2;
+    --info: #3b82f6;
+    --info-light: #dbeafe;
+
+    /* ========== TYPOGRAPHY ========== */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Outfit', 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Font Sizes */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+
+    /* ========== SPACING ========== */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* ========== BORDER RADIUS ========== */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
+    --radius-full: 9999px;
+
+    /* ========== SHADOWS ========== */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    
+    /* Colored shadows */
+    --shadow-primary: 0 10px 40px -10px rgba(15, 184, 155, 0.35);
+    --shadow-primary-lg: 0 20px 60px -15px rgba(15, 184, 155, 0.4);
+    --shadow-glow: 0 0 40px rgba(15, 184, 155, 0.15);
+
+    /* ========== GLASSMORPHISM ========== */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-blur: 20px;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* ========== TRANSITIONS ========== */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* ========== Z-INDEX ========== */
+    --z-base: 0;
+    --z-elevated: 10;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-overlay: 300;
+    --z-modal: 400;
+    --z-toast: 500;
+    --z-tooltip: 600;
+
+    /* ========== LAYOUT ========== */
+    --sidebar-width: 420px;
+    --header-height: 70px;
+    --max-content-width: 1400px;
+
+    /* ========== LIGHT THEME (Default) ========== */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-overlay: rgba(15, 23, 42, 0.5);
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --text-inverse: #ffffff;
+
+    --border-light: #e2e8f0;
+    --border-medium: #cbd5e1;
+    --border-strong: #94a3b8;
+
+    /* Specialty Tag Colors */
+    --specialty-cardiologist: #ef4444;
+    --specialty-pediatrician: #f97316;
+    --specialty-orthopedic: #8b5cf6;
+    --specialty-dermatologist: #06b6d4;
+    --specialty-dentist: #84cc16;
+    --specialty-physician: #3b82f6;
+    --specialty-surgeon: #6366f1;
+    --specialty-gynecologist: #ec4899;
+}
+
+/* ========== DARK THEME ========== */
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --bg-card: #1e293b;
+    --bg-glass: rgba(30, 41, 59, 0.85);
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #64748b;
+    --text-inverse: #0f172a;
+
+    --border-light: #334155;
+    --border-medium: #475569;
+    --border-strong: #64748b;
+
+    --glass-bg: rgba(30, 41, 59, 0.8);
+    --glass-border: rgba(71, 85, 105, 0.5);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    --shadow-primary: 0 10px 40px -10px rgba(15, 184, 155, 0.25);
+    --shadow-glow: 0 0 40px rgba(15, 184, 155, 0.1);
+}
+
+/* ========== SPECIALTY COLOR MAP ========== */
+.specialty-anesthesiologist { --specialty-color: #22c55e; }
+.specialty-cardiologist { --specialty-color: #ef4444; }
+.specialty-consulting-physician { --specialty-color: #3b82f6; }
+.specialty-dermatologist { --specialty-color: #06b6d4; }
+.specialty-ent-surgeon { --specialty-color: #14b8a6; }
+.specialty-obstetrician-gynaecologist { --specialty-color: #ec4899; }
+.specialty-ophthalmologist { --specialty-color: #0ea5e9; }
+.specialty-orthopaedic-surgeon { --specialty-color: #8b5cf6; }
+.specialty-paediatrician { --specialty-color: #f97316; }
+.specialty-pathologist { --specialty-color: #a855f7; }
+.specialty-radiologist { --specialty-color: #f59e0b; }
+.specialty-surgeon { --specialty-color: #6366f1; }
+.specialty-dental { --specialty-color: #84cc16; }
+.specialty-psychiatrist { --specialty-color: #64748b; }
+.specialty-oncologist { --specialty-color: #dc2626; }
+.specialty-neurologist { --specialty-color: #7c3aed; }
+.specialty-urologist { --specialty-color: #0891b2; }
+.specialty-family-physician { --specialty-color: #059669; }
+.specialty-physiotherapist { --specialty-color: #16a34a; }
+.specialty-homeopath { --specialty-color: #10b981; }
+.specialty-ayurveda { --specialty-color: #d97706; }
+.specialty-unani { --specialty-color: #7c3aed; }
+.specialty-other { --specialty-color: #94a3b8; }
+
+/* ========== UTILITY CLASSES ========== */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
+}
+
+.gradient-hero {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 50%, var(--secondary-700) 100%);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary-400), var(--secondary-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes slide-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+    0% { opacity: 0; transform: translateX(20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Premium focus states */
+*:focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+/* Scrollbar customization */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-500) var(--bg-tertiary);
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-400), var(--primary-600));
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-tertiary);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--primary-500), var(--primary-700));
+}
+
+/* Selection styling */
+::selection {
+    background: var(--primary-200);
+    color: var(--primary-900);
+}
+
+[data-theme="dark"] ::selection {
+    background: var(--primary-700);
+    color: var(--primary-100);
+}

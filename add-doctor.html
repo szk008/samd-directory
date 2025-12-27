@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description"
+        content="Add your practice to the SAMD Directory - South Gujarat's premier medical directory">
+    <title>Add Doctor | SAMD Directory</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* Add Doctor Page Specific Styles */
+        .page-container {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .page-container::before,
+        .page-container::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .page-container::before {
+            width: 500px;
+            height: 500px;
+            background: var(--primary-400);
+            top: -150px;
+            right: -100px;
+        }
+
+        .page-container::after {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary-400);
+            bottom: -50px;
+            left: -100px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
+            color: white;
+            padding: var(--space-6);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-400), var(--primary-300), var(--secondary-400));
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-lg);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-3px);
+        }
+
+        .header-title h1 {
+            font-family: var(--font-display);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            font-size: var(--text-sm);
+            opacity: 0.8;
+        }
+
+        .page-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            animation: slide-up 0.5s ease-out;
+        }
+
+        .form-section:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .form-section:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .form-section:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+        }
+
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-label .required {
+            color: var(--error);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-base);
+            font-family: var(--font-primary);
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: all var(--transition-base);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 4px rgba(15, 184, 155, 0.15);
+            background: var(--bg-card);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 48px;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-helper {
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+            margin-top: var(--space-1);
+        }
+
+        /* Location Section */
+        .location-preview {
+            height: 200px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-top: var(--space-3);
+            border: 2px solid var(--border-light);
+        }
+
+        .location-actions {
+            display: flex;
+            gap: var(--space-3);
+            margin-top: var(--space-4);
+        }
+
+        .coord-display {
+            flex: 1;
+            padding: var(--space-3) var(--space-4);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .geocode-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-5);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .geocode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary-lg);
+        }
+
+        /* Specialty Grid */
+        .specialty-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--space-2);
+        }
+
+        .specialty-option {
+            position: relative;
+        }
+
+        .specialty-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .specialty-option label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .specialty-option input:checked+label {
+            background: var(--primary-50);
+            border-color: var(--primary-500);
+            color: var(--primary-700);
+        }
+
+        .specialty-option label:hover {
+            border-color: var(--primary-300);
+        }
+
+        .specialty-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Premium Section */
+        .premium-banner {
+            background: linear-gradient(135deg, var(--secondary-500), var(--secondary-600));
+            color: white;
+            padding: var(--space-5);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-5);
+        }
+
+        .premium-banner h3 {
+            font-family: var(--font-display);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .premium-banner p {
+            opacity: 0.9;
+            font-size: var(--text-sm);
+        }
+
+        /* Submit Section */
+        .submit-section {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--bg-card);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--border-light);
+        }
+
+        .submit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4) var(--space-10);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius-xl);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-primary-lg);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(15, 184, 155, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .submit-note {
+            margin-top: var(--space-4);
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+        }
+
+        .submit-note i {
+            color: var(--warning);
+        }
+
+        /* Success Modal */
+        .success-content {
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            animation: scale-in 0.5s ease-out;
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        @keyframes scale-in {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-content {
+                padding: var(--space-4);
+            }
+
+            .form-section {
+                padding: var(--space-4);
+            }
+
+            .header-title h1 {
+                font-size: var(--text-xl);
+            }
+
+            .location-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="index.html" class="back-btn" title="Back to Directory">
+                        <i data-lucide="arrow-left" style="width: 22px; height: 22px;"></i>
+                    </a>
+                    <div class="header-title">
+                        <h1>Add Your Practice</h1>
+                        <p>Join the SAMD Medical Directory</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="page-content">
+            <!-- Personal Information -->
+            <section class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="user" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Personal Information</h2>
+                        <p class="section-subtitle">Basic details about the doctor</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Full Name <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="doctorName" placeholder="Dr. First Last" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Phone Number <span class="required">*</span>
+                        </label>
+                        <input type="tel" class="form-input" id="doctorPhone" placeholder="9876543210"
+                            pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            Qualifications <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="doctorQualification"
+                            placeholder="e.g., M.B.B.S, M.D (Medicine), DNB" required>
+                        <p class="form-helper">List all degrees separated by commas</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Specialty Selection -->
+            <section class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="stethoscope" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Specialty</h2>
+                        <p class="section-subtitle">Select your primary specialty</p>
+                    </div>
+                </div>
+
+                <div class="specialty-grid" id="specialtyGrid">
+                    <!-- Specialties will be dynamically populated -->
+                </div>
+            </section>
+
+            <!-- Practice Details -->
+            <section class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="building-2" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Practice Details</h2>
+                        <p class="section-subtitle">Where can patients find you?</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            Hospital / Clinic Name <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="doctorHospital"
+                            placeholder="e.g., City Medical Centre" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            Full Address <span class="required">*</span>
+                        </label>
+                        <textarea class="form-textarea" id="doctorAddress" placeholder="Street, Area, City, PIN"
+                            required></textarea>
+                        <p class="form-helper">Include complete address for accurate location mapping</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Location Mapping -->
+            <section class="form-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="map-pin" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Location on Map</h2>
+                        <p class="section-subtitle">Help patients find your practice easily</p>
+                    </div>
+                </div>
+
+                <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">
+                    Enter your address above and click "Find Location" to automatically detect coordinates,
+                    or drag the marker on the map to set exact location.
+                </p>
+
+                <div class="location-preview" id="previewMap"></div>
+
+                <div class="location-actions">
+                    <div class="coord-display" id="coordsDisplay">
+                        <i data-lucide="crosshair" style="width: 16px; height: 16px;"></i>
+                        <span>Location not set</span>
+                    </div>
+                    <button type="button" class="geocode-btn" id="geocodeBtn">
+                        <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                        Find Location
+                    </button>
+                </div>
+
+                <input type="hidden" id="latitude">
+                <input type="hidden" id="longitude">
+            </section>
+
+            <!-- Premium Upgrade -->
+            <section class="form-section">
+                <div class="premium-banner">
+                    <h3>⭐ Upgrade to Premium</h3>
+                    <p>Get featured in our homepage carousel, priority search placement, and a verified badge. Contact
+                        us after registration.</p>
+                </div>
+            </section>
+
+            <!-- Submit -->
+            <section class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i data-lucide="send" style="width: 22px; height: 22px;"></i>
+                    Submit for Review
+                </button>
+                <p class="submit-note">
+                    <i data-lucide="info" style="width: 14px; height: 14px;"></i>
+                    Your submission will be reviewed before being published. This usually takes 24-48 hours.
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content success-content">
+            <div class="success-icon">
+                <i data-lucide="check" style="width: 40px; height: 40px;"></i>
+            </div>
+            <h2 class="modal-title">Thank You!</h2>
+            <p class="modal-subtitle" style="margin-bottom: var(--space-6);">
+                Your submission has been received. We'll review your details and add you to the directory within 24-48
+                hours.
+            </p>
+            <a href="index.html" class="btn btn-primary" style="display: inline-flex; text-decoration: none;">
+                <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+                Back to Directory
+            </a>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/data.js"></script>
+
+    <script>
+        // Initialize icons
+        lucide.createIcons();
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slide-up 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Initialize specialty grid
+        const specialtyGrid = document.getElementById('specialtyGrid');
+        Object.entries(SAMD_DATA.specialties).forEach(([key, data]) => {
+            if (key === 'OTHER') return; // Skip OTHER
+            const option = document.createElement('div');
+            option.className = 'specialty-option';
+            option.innerHTML = `
+                <input type="radio" name="specialty" id="spec_${key}" value="${key}">
+                <label for="spec_${key}">
+                    <span class="specialty-dot" style="background: ${data.color}"></span>
+                    ${data.label}
+                </label>
+            `;
+            specialtyGrid.appendChild(option);
+        });
+
+        // Add OTHER at the end
+        const otherOption = document.createElement('div');
+        otherOption.className = 'specialty-option';
+        otherOption.innerHTML = `
+            <input type="radio" name="specialty" id="spec_OTHER" value="OTHER">
+            <label for="spec_OTHER">
+                <span class="specialty-dot" style="background: ${SAMD_DATA.specialties.OTHER.color}"></span>
+                Other
+            </label>
+        `;
+        specialtyGrid.appendChild(otherOption);
+
+        // Initialize map
+        let previewMap, marker;
+        const defaultCenter = [21.1702, 72.8311];
+
+        previewMap = L.map('previewMap').setView(defaultCenter, 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        }).addTo(previewMap);
+
+        // Add draggable marker
+        marker = L.marker(defaultCenter, { draggable: true }).addTo(previewMap);
+
+        marker.on('dragend', function (e) {
+            const pos = marker.getLatLng();
+            document.getElementById('latitude').value = pos.lat;
+            document.getElementById('longitude').value = pos.lng;
+            document.getElementById('coordsDisplay').innerHTML = `
+                <i data-lucide="crosshair" style="width: 16px; height: 16px;"></i>
+                📍 ${pos.lat.toFixed(4)}, ${pos.lng.toFixed(4)}
+            `;
+            lucide.createIcons();
+        });
+
+        // Geocode address
+        document.getElementById('geocodeBtn').addEventListener('click', async () => {
+            const address = document.getElementById('doctorAddress').value;
+            if (!address) {
+                showToast('Please enter an address first', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('geocodeBtn');
+            btn.innerHTML = '<span class="spinner" style="width: 18px; height: 18px; border-width: 2px;"></span> Finding...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Gujarat, India')}`
+                );
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const { lat, lon } = data[0];
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lon;
+                    document.getElementById('coordsDisplay').innerHTML = `
+                        <i data-lucide="crosshair" style="width: 16px; height: 16px;"></i>
+                        📍 ${parseFloat(lat).toFixed(4)}, ${parseFloat(lon).toFixed(4)}
+                    `;
+                    previewMap.setView([lat, lon], 16);
+                    marker.setLatLng([lat, lon]);
+                    showToast('Location found successfully!', 'success');
+                } else {
+                    showToast('Could not find location. Try dragging the marker.', 'error');
+                }
+            } catch (error) {
+                showToast('Error finding location. Please try again.', 'error');
+            }
+
+            btn.innerHTML = '<i data-lucide="search" style="width: 18px; height: 18px;"></i> Find Location';
+            btn.disabled = false;
+            lucide.createIcons();
+        });
+
+        // Form submission
+        document.getElementById('submitBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // Gather form data
+            const name = document.getElementById('doctorName').value.trim();
+            const phone = document.getElementById('doctorPhone').value.trim();
+            const qualification = document.getElementById('doctorQualification').value.trim();
+            const hospital = document.getElementById('doctorHospital').value.trim();
+            const address = document.getElementById('doctorAddress').value.trim();
+            const specialty = document.querySelector('input[name="specialty"]:checked')?.value;
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+
+            // Validation
+            if (!name || !phone || !qualification || !hospital || !address) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            if (!specialty) {
+                showToast('Please select a specialty', 'error');
+                return;
+            }
+
+            if (!lat || !lng) {
+                showToast('Please set location on map', 'error');
+                return;
+            }
+
+            // Submit button loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner" style="width: 22px; height: 22px; border-width: 3px;"></span> Submitting...';
+
+            try {
+                const response = await fetch('/api/doctors/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        phone,
+                        qualification,
+                        hospital,
+                        address,
+                        specialty,
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show success modal
+                    document.getElementById('successModal').classList.add('active');
+                    lucide.createIcons();
+                } else {
+                    showToast(data.error || 'Submission failed. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i data-lucide="send" style="width: 22px; height: 22px;"></i> Submit for Review';
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showToast('Network error. Please check your connection.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i data-lucide="send" style="width: 22px; height: 22px;"></i> Submit for Review';
+                lucide.createIcons();
+            }
+        });
+
+        // Close modal
+        document.getElementById('successModal').addEventListener('click', (e) => {
+            if (e.target.id === 'successModal') {
+                document.getElementById('successModal').classList.remove('active');
+            }
+        });
+
+        // Phone input validation
+        document.getElementById('doctorPhone').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        });
+
+        // Apply admin settings for creator footer
+        (function () {
+            const SETTINGS_KEY = 'samd_admin_settings';
+            const stored = localStorage.getItem(SETTINGS_KEY);
+            const settings = stored ? JSON.parse(stored) : {
+                creatorFooterVisible: true,
+                creatorName: 'Dr. Shahnavaz Kanuga',
+                creatorPhone: '9879520091'
+            };
+
+            const footer = document.getElementById('creatorFooter');
+            const creatorName = document.getElementById('creatorName');
+            if (footer) {
+                if (settings.creatorFooterVisible === false) {
+                    footer.classList.add('hidden');
+                }
+            }
+            if (creatorName && settings.creatorName) {
+                creatorName.textContent = settings.creatorName;
+                creatorName.href = `tel:${settings.creatorPhone || '9879520091'}`;
+            }
+        })();
+    </script>
+
+    <!-- Creator Footer -->
+    <footer class="creator-footer" id="creatorFooter">
+        <span>Created by</span>
+        <a href="tel:9879520091" class="creator-name" id="creatorName">Dr. Shahnavaz Kanuga</a>
+    </footer>
+</body>
+
+</html>
