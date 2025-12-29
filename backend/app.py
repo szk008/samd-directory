@@ -1,14 +1,19 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from backend.config import Config
 from backend.database import db
 from backend.routes.search import search_bp
 from backend.routes.public import public_bp
 from backend.routes.admin import admin_bp
 from backend.routes.auth import auth_bp
+from backend.routes.doctor_self import doctor_self_bp
 
 def create_app():
     app = Flask(__name__, template_folder="../web/templates", static_folder="../web/static")
-    app.config.from_object(Config)
+   app.config.from_object(Config)
+    
+    # Enable CORS for API routes
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     db.init_app(app)
 
@@ -16,6 +21,7 @@ def create_app():
     app.register_blueprint(public_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(doctor_self_bp)
 
     with app.app_context():
         db.create_all()

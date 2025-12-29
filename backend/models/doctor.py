@@ -15,13 +15,25 @@ class Doctor(db.Model):
     # Link to User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
-    phone = db.Column(db.String)
+    phone = db.Column(db.String)  # Legacy - being replaced by personal_mobile
     whatsapp = db.Column(db.String)
-
+    
+    # Privacy-enhanced contact fields
+    personal_mobile = db.Column(db.String, unique=True)  # For authentication & private contact
+    business_mobile = db.Column(db.String)  # Public-facing masked number
+    
+    # Doctor profile fields
+    degree = db.Column(db.String)  # e.g., "MBBS", "BDS", "BAMS"
+    
+    # Location fields
     city = db.Column(db.String)
     area = db.Column(db.String)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
+    last_location_update = db.Column(db.DateTime)  # Track when doctor last updated location
+    
+    # Registration tracking
+    self_registered = db.Column(db.Boolean, default=False)  # True if doctor added themselves
 
     clinic_name = db.Column(db.String)
     profile_photo_url = db.Column(db.String)
@@ -31,16 +43,38 @@ class Doctor(db.Model):
             "id": self.id,
             "name": self.name,
             "specialty": self.specialty,
+            "degree": self.degree,
             "experience_years": self.experience_years,
             "rating": self.rating,
             "review_count": self.review_count,
             "verified": self.verified,
-            "phone": self.phone,
+            "phone": self.phone,  # Legacy
             "whatsapp": self.whatsapp,
             "city": self.city,
             "area": self.area,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "clinic_name": self.clinic_name,
-            "profile_photo_url": self.profile_photo_url
+            "profile_photo_url": self.profile_photo_url,
+            "self_registered": self.self_registered
+        }
+    
+    def to_public_dict(self):
+        """Public-facing doctor data with masked contact info"""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "specialty": self.specialty,
+            "degree": self.degree,
+            "experience_years": self.experience_years,
+            "rating": self.rating,
+            "review_count": self.review_count,
+            "verified": self.verified,
+            "city": self.city,
+            "area": self.area,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "clinic_name": self.clinic_name,
+            "profile_photo_url": self.profile_photo_url,
+            # Contact info is masked - use /api/doctor/<id>/contact to get business number
         }

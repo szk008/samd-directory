@@ -1,75 +1,175 @@
 from flask import Blueprint, request, jsonify
-from datetime import datetime, timedelta
-import random
+from datetime import datetime
 from backend.database import db
-from backend.models.user import User
-from backend.models.otp import OTP
 from backend.models.doctor import Doctor
-from backend.services.otp_service import send_otp
+from backend.auth.otp import create_otp_session, verify_otp_session, generate_jwt, verify_jwt
+from backend.services.sms_service import send_otp
+from functools import wraps
 
 auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route("/api/auth/send-otp", methods=["POST"])
-def send_otp_handler():
+def jwt_required(f):
+    """Decorator to protect routes with JWT authentication"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        
+        if not auth_header:
+            return jsonify({"error": "No authorization token provided"}), 401
+        
+        try:
+            token = auth_header.split(' ')[1]  # Bearer <token>
+        except IndexError:
+            return jsonify({"error": "Invalid authorization header format"}), 401
+        
+        doctor_id, error = verify_jwt(token)
+        
+        if error:
+            return jsonify({"error": error}), 401
+        
+        # Attach doctor_id to request context
+        request.doctor_id = doctor_id
+        
+        return f(*args, **kwargs)
+    
+    return decorated_function
+
+@auth_bp.route("/api/auth/request-otp", methods=["POST"])
+def request_otp():
+    """
+    Request OTP for login or registration.
+    Works for both existing and new doctors.
+    """
     data = request.json
-    phone = data.get("phone")
-    if not phone:
-        return jsonify({"error": "Phone required"}), 400
-
-    otp_code = str(random.randint(100000, 999999))
-    expires = datetime.utcnow() + timedelta(minutes=5)
-
-    # Clear old OTPs
-    OTP.query.filter_by(phone=phone).delete()
+    mobile_number = data.get("mobile")
     
-    new_otp = OTP(phone=phone, code=otp_code, expires_at=expires)
-    db.session.add(new_otp)
-    db.session.commit()
-
-    res = send_otp(phone, otp_code)
-    return jsonify(res)
-
-@auth_bp.route("/api/auth/verify-otp", methods=["POST"])
-def verify_otp_handler():
-    data = request.json
-    phone = data.get("phone")
-    code = data.get("code")
-
-    otp = OTP.query.filter_by(phone=phone).first()
+    if not mobile_number:
+        return jsonify({"error": "Mobile number required"}), 400
     
-    if not otp or otp.code != code:
-        return jsonify({"error": "Invalid OTP"}), 400
+    # Get request metadata for abuse tracking
+   ip_address = request.remote_addr
+    user_agent = request.headers.get('User-Agent', '')
     
-    if datetime.utcnow() > otp.expires_at:
-        return jsonify({"error": "OTP Expired"}), 400
-
-    # User handling
-    user = User.query.filter_by(phone=phone).first()
-    is_new = False
-    if not user:
-        is_new = True
-        user = User(phone=phone, name=f"User {phone[-4:]}")
-        db.session.add(user)
+   # Create OTP session
+    session, result = create_otp_session(mobile_number, ip_address, user_agent)
     
-    # Auto-link doctor if matching phone
-    if is_new or not user.doctor_profile:
-        clean_phone = phone[-10:] # simple suffix match
-        doc = Doctor.query.filter(Doctor.phone.ilike(f"%{clean_phone}")).first()
-        if doc and not doc.user_id:
-            user.role = "doctor"
-            user.name = doc.name
-            doc.user_id = user.id # Link will happen on commit as user.id generation needs flush, handled by SQLAlchemy session usually
-            # But safe to set relationship
-            user.doctor_profile = doc
-            
-    db.session.delete(otp) # Consume OTP
-    db.session.commit()
-
+    if not session:
+        # Rate limit exceeded
+        return jsonify({"error": result}), 429
+    
+    # result is the plain OTP
+    otp = result
+    
+    # Send OTP via SMS
+    success, message = send_otp(mobile_number, otp)
+    
+    if not success:
+        return jsonify({"error": f"Failed to send OTP: {message}"}), 500
+    
     return jsonify({
         "success": True,
-        "user": {
-            "id": user.id,
-            "name": user.name,
-            "role": user.role
-        }
+        "session_id": session.id,
+        "message": "OTP sent successfully",
+        "expires_in_minutes": 5
     })
+
+@auth_bp.route("/api/auth/verify-otp", methods=["POST"])
+def verify_otp():
+    """
+    Verify OTP and issue JWT token.
+    Works for both login (existing doctor) and registration flow.
+    """
+    data = request.json
+    session_id = data.get("session_id")
+    otp = data.get("otp")
+    mobile_number = data.get("mobile")
+    
+    if not all([session_id, otp, mobile_number]):
+        return jsonify({"error": "session_id, otp, and mobile required"}), 400
+    
+    # Verify OTP
+    success, message = verify_otp_session(session_id, otp)
+    
+    if not success:
+        return jsonify({"error": message}), 400
+    
+    # Check if doctor exists
+    doctor = Doctor.query.filter_by(personal_mobile=mobile_number).first()
+    
+    if doctor:
+        # Existing doctor - issue JWT
+        token = generate_jwt(doctor.id)
+        
+        return jsonify({
+            "success": True,
+            "token": token,
+            "doctor": doctor.to_dict(),
+            "is_new": False
+        })
+    else:
+        # New doctor - return success but no token yet
+        # They need to complete registration first
+        return jsonify({
+            "success": True,
+            "is_new": True,
+            "message": "OTP verified. Please complete registration."
+        })
+
+@auth_bp.route("/api/auth/register", methods=["POST"])
+def register_doctor():
+    """
+    Complete doctor self-registration after OTP verification.
+    Creates a new doctor profile marked as self_registered and unverified.
+    """
+    data = request.json
+    
+    # Required fields
+    mobile = data.get("mobile")
+    name = data.get("name")
+    degree = data.get("degree")
+    specialty = data.get("specialty")
+    area = data.get("area") 
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
+    
+    # Validate required fields
+    if not all([mobile, name, specialty, area, latitude, longitude]):
+        return jsonify({
+            "error": "Required fields: mobile, name, specialty, area, latitude, longitude"
+        }), 400
+    
+    # Check if doctor already exists
+    existing = Doctor.query.filter_by(personal_mobile=mobile).first()
+    if existing:
+        return jsonify({"error": "Doctor with this mobile number already exists"}), 409
+    
+    # Create new doctor
+    doctor = Doctor(
+        name=name,
+        degree=degree or "",
+        specialty=specialty,
+        area=area,
+        city=data.get("city", ""),
+        latitude=latitude,
+        longitude=longitude,
+        personal_mobile=mobile,
+        phone=mobile,  # Legacy field
+        experience_years=data.get("experience_years", 0),
+        clinic_name=data.get("clinic_name", ""),
+        verified=False,  # Requires admin approval
+        self_registered=True,
+        last_location_update=datetime.utcnow()
+    )
+    
+    db.session.add(doctor)
+    db.session.commit()
+    
+    # Issue JWT token
+    token = generate_jwt(doctor.id)
+    
+    return jsonify({
+        "success": True,
+        "token": token,
+        "doctor": doctor.to_dict(),
+        "message": "Registration successful. Your profile is pending verification."
+    }), 201

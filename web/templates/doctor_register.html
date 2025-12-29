@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Registration - SAMD Directory</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <h1>Add Yourself to SAMD Directory</h1>
+                <p>Register your practice and reach more patients</p>
+            </div>
+
+            <!-- Step 1: OTP Verification -->
+            <div id="step1" class="registration-step">
+                <h2>Step 1: Verify Your Mobile Number</h2>
+                <form id="otpRequestForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number</label>
+                        <input type="tel" id="mobile" name="mobile" placeholder="+91 9876543210" pattern="[0-9]{10,12}"
+                            required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Send OTP
+                    </button>
+                </form>
+
+                <div id="otpVerifySection" style="display: none;">
+                    <div class="form-group">
+                        <label for="otp">Enter OTP</label>
+                        <input type="text" id="otp" placeholder="123456" maxlength="6" />
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block" id="verifyOtpBtn">
+                        Verify OTP
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Profile Information -->
+            <div id="step2" class="registration-step" style="display: none;">
+                <h2>Step 2: Your Profile</h2>
+                <form id="profileForm" class="auth-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="degree">Degree *</label>
+                            <input type="text" id="degree" placeholder="e.g., MBBS, BDS" required />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="specialty">Specialty *</label>
+                            <select id="specialty" required>
+                                <option value="">Select Specialty</option>
+                                <option value="General Physician">General Physician</option>
+                                <option value="Cardiologist">Cardiologist</option>
+                                <option value="Dentist">Dentist</option>
+                                <option value="Dermatologist">Dermatologist</option>
+                                <option value="Orthopedic">Orthopedic</option>
+                                <option value="Pediatrician">Pediatrician</option>
+                                <option value="Gynecologist">Gynecologist</option>
+                                <option value="ENT Specialist">ENT Specialist</option>
+                                <option value="Ophthalmologist">Ophthalmologist</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experience">Years of Experience</label>
+                            <input type="number" id="experience" min="0" max="60" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clinicName">Clinic Name (Optional)</label>
+                        <input type="text" id="clinicName" />
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block" id="nextToLocationBtn">
+                        Next: Set Location →
+                    </button>
+                </form>
+            </div>
+
+            <!-- Step 3: Location -->
+            <div id="step3" class="registration-step" style="display: none;">
+                <h2>Step 3: Mark Your Clinic Location</h2>
+                <p class="help-text">Drag the marker to your exact clinic location</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="area">Area *</label>
+                        <input type="text" id="area" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" value="Surat" required />
+                    </div>
+                </div>
+
+                <div id="registrationMap" style="height: 400px; margin: 16px 0; border-radius: 12px;"></div>
+
+                <p class="help-text">
+                    Latitude: <span id="latDisplay">-</span>, Longitude: <span id="lngDisplay">-</span>
+                </p>
+
+                <button type="button" class="btn btn-primary btn-block" id="completeRegistrationBtn">
+                    Complete Registration
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p>Already registered? <a href="/doctor/login">Login here</a></p>
+                <p><a href="/">← Back to Home</a></p>
+            </div>
+
+            <div id="message" class="message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/doctor-register.js') }}"></script>
+</body>
+
+</html>

@@ -1,14 +1,33 @@
 import os
 
 class Config:
+    """Flask application configuration"""
+    
+    # Database
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///directory.db"
+        'DATABASE_URL', 
+        'sqlite:///instance/samd.db'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
-
-    MTALKZ_API_KEY = os.getenv("MTALKZ_API_KEY", "ImPBeDyAom6zfpFgJfhrI0OUivG26T")
-    MTALKZ_SENDER_ID = "SAMDDR"
     
-    ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "CHANGE_THIS_SECRET_IN_PROD")
+    # JWT Secret (use environment variable in production!)
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-secret-change-in-production')
+    JWT_EXPIRY_HOURS = 24  # JWT tokens expire after 24 hours
+    
+    # OTP Configuration
+    OTP_EXPIRY_MINUTES = 5
+    OTP_MAX_ATTEMPTS = 3
+    OTP_RATE_LIMIT_PER_HOUR = 3  # Max OTP requests per phone per hour
+    
+    # SMS Gateway (stub for now)
+    SMS_GATEWAY_ENABLED = os.getenv('SMS_GATEWAY_ENABLED', 'False') == 'True'
+    SMS_GATEWAY_API_KEY = os.getenv('SMS_GATEWAY_API_KEY', '')
+    
+    # Call Masking (stub for now)
+    CALL_MASKING_ENABLED = os.getenv('CALL_MASKING_ENABLED', 'False') == 'True'
+    
+    # Security
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    
+    # CORS
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*')  # Restrict in production

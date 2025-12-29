@@ -1,32 +1,71 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>Doctor Directory</title>
-  <meta name="description" content="Find verified doctors near you on an interactive map.">
-  <meta name="robots" content="index, follow">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMD Medical Directory - Find Doctors Near You</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>SAMD Medical Directory</h1>
+            </div>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="#" id="doctorLoginBtn" class="nav-link">Doctor Login</a>
+                <a href="#" id="addDoctorBtn" class="nav-link btn-primary">Add Yourself</a>
+            </nav>
+        </div>
+    </header>
 
-  <div style="text-align:center; padding: 10px 0; background: white;">
-    <img src="/static/img/logo.png" alt="SAMD Logo" style="height: 60px; max-width: 100%;">
-  </div>
+    <!-- Floating Search Bar -->
+    <div class="search-container">
+        <div class="search-bar">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search by doctor name, specialty, or area..."
+                class="search-input"
+            />
+            <button class="search-btn" id="searchBtn">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 
-  <input id="search" placeholder="Search doctor, area, specialty">
+    <!-- Map Container -->
+    <div id="map" class="map-container"></div>
 
-  <div id="loading" style="display:none; text-align:center; padding:10px;">Loading doctors…</div>
-  <div id="map"></div>
-  <div id="cards"></div>
+    <!-- Bottom Sheet - Doctor Cards -->
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="bottom-sheet-header">
+            <div class="sheet-handle"></div>
+            <h2 class="sheet-title">Nearby Doctors</h2>
+            <p class="sheet-subtitle" id="resultCount">Loading...</p>
+        </div>
+        
+        <div class="doctor-cards" id="doctorCards">
+            <!-- Doctor cards will be injected here by JavaScript -->
+        </div>
+    </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-  <script src="/static/js/map.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
-
 </html>
