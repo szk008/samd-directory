@@ -51,7 +51,7 @@ def update_profile():
     if "area" in data:
         doctor.area = data["area"]
     
-     if "personal_mobile" in data:
+    if "personal_mobile" in data:
         # Check if new mobile already exists
         new_mobile = data["personal_mobile"]
         existing = Doctor.query.filter_by(personal_mobile=new_mobile).first()
