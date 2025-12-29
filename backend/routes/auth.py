@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
-from datetime import datetime
+from functools import wraps
 from backend.database import db
 from backend.models.doctor import Doctor
 from backend.auth.otp import create_otp_session, verify_otp_session, generate_jwt, verify_jwt
-from backend.services.sms_service import send_otp
-from functools import wraps
+from backend.services.otp_service import send_otp
 
 auth_bp = Blueprint("auth", __name__)
 

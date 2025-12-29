@@ -19,7 +19,11 @@ class Config:
     OTP_MAX_ATTEMPTS = 3
     OTP_RATE_LIMIT_PER_HOUR = 3  # Max OTP requests per phone per hour
     
-    # SMS Gateway (stub for now)
+    # mTalkz SMS/WhatsApp Gateway
+    MTALKZ_API_KEY = os.getenv('MTALKZ_API_KEY', '')  # Set this in environment!
+    MTALKZ_SENDER_ID = os.getenv('MTALKZ_SENDER_ID', 'SAMDDR')
+    
+    # Legacy SMS config (deprecated, using mTalkz now)
     SMS_GATEWAY_ENABLED = os.getenv('SMS_GATEWAY_ENABLED', 'False') == 'True'
     SMS_GATEWAY_API_KEY = os.getenv('SMS_GATEWAY_API_KEY', '')
     
