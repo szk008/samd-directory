@@ -32,19 +32,20 @@ def create_app():
         logging.basicConfig(level=logging.INFO)
         app.logger.setLevel(logging.INFO)
     
-    # Error handlers
-    @app.errorhandler(Exception)
-    def server_error(e):
-        app.logger.error(f"Unhandled exception: {str(e)}")
-        return jsonify({"error": "Server error"}), 500
+    # Favicon route (prevents 404 errors)
+    @app.route("/favicon.ico")
+    def favicon():
+        return "", 204
+    
+    # Error handlers (simplified for deployment stability)
+    @app.errorhandler(500)
+    def internal_error(e):
+        app.logger.error(f"Internal error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
     
     @app.errorhandler(404)
     def not_found(e):
         return jsonify({"error": "Not found"}), 404
-    
-    @app.errorhandler(403)
-    def forbidden(e):
-        return jsonify({"error": "Forbidden"}), 403
 
     return app
 
