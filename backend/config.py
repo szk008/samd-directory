@@ -5,7 +5,7 @@ class Config:
     
     # Database - Use absolute path for PythonAnywhere
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    DB_PATH = os.path.join(BASE_DIR, '../instance/samd.db')
+    DB_PATH = os.path.join(BASE_DIR, 'samd.db')
     
     SQLALCHEMY_DATABASE_URI = f'sqlite:///{DB_PATH}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
