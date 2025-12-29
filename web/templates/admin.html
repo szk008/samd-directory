@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SAMD Directory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h1>SAMD Admin</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#pending" class="nav-item active" data-tab="pending">
+                    <span class="badge" id="pendingCount">0</span>
+                    Pending Verification
+                </a>
+                <a href="#verified" class="nav-item" data-tab="verified">
+                    Verified Doctors
+                </a>
+                <a href="#business-numbers" class="nav-item" data-tab="business-numbers">
+                    Business Numbers
+                </a>
+                <a href="#stats" class="nav-item" data-tab="stats">
+                    Statistics
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" class="btn-secondary">← Back to Site</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <!-- Pending Verification Tab -->
+            <div class="admin-tab active" id="pending-tab">
+                <div class="tab-header">
+                    <h2>Pending Verification</h2>
+                    <p>Review and approve self-registered doctors</p>
+                </div>
+
+                <div id="pendingDoctors" class="doctor-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Verified Doctors Tab -->
+            <div class="admin-tab" id="verified-tab">
+                <div class="tab-header">
+                    <h2>Verified Doctors</h2>
+                    <p>Manage verified doctor profiles</p>
+                </div>
+
+                <div id="verifiedDoctors" class="doctor-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Business Numbers Tab -->
+            <div class="admin-tab" id="business-numbers-tab">
+                <div class="tab-header">
+                    <h2>Business Number Management</h2>
+                    <p>Assign masked numbers for call routing</p>
+                </div>
+
+                <div id="businessNumbers" class="doctor-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div class="admin-tab" id="stats-tab">
+                <div class="tab-header">
+                    <h2>Statistics</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalDoctors">0</h3>
+                        <p>Total Doctors</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="verifiedCount">0</h3>
+                        <p>Verified</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="selfRegisteredCount">0</h3>
+                        <p>Self-Registered</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="businessNumbersCount">0</h3>
+                        <p>With Business Numbers</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for editing doctor -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Doctor</h2>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editDoctorId" />
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="editName" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" id="editDegree" />
+                        </div>
+                        <div class="form-group">
+                            <label>Specialty</label>
+                            <input type="text" id="editSpecialty" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Business Mobile (for masking)</label>
+                        <input type="tel" id="editBusinessMobile" placeholder="+91 9XX-XXX-XXXX" />
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="toast" style="display: none;"></div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+
+</html>

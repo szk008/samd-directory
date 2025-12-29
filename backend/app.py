@@ -25,6 +25,12 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+    
+    # Configure logging
+    if not app.debug:
+        import logging
+        logging.basicConfig(level=logging.INFO)
+        app.logger.setLevel(logging.INFO)
 
     return app
 
@@ -32,8 +38,17 @@ app = create_app()
 
 @app.errorhandler(Exception)
 def server_error(e):
-    # Log the error here in production
+    # Log the error
+    app.logger.error(f"Unhandled exception: {str(e)}")
     return jsonify({"error": "Server error"}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"error": "Not found"}), 404
+
+@app.errorhandler(403)
+def forbidden(e):
+    return jsonify({"error": "Forbidden"}), 403
 
 if __name__ == "__main__":
     app.run(debug=True)

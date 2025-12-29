@@ -26,6 +26,9 @@ class Config:
     # Call Masking (stub for now)
     CALL_MASKING_ENABLED = os.getenv('CALL_MASKING_ENABLED', 'False') == 'True'
     
+    # Admin
+    ADMIN_TOKEN = os.getenv('ADMIN_TOKEN', 'admin-secret-123')  # Change in production!
+    
     # Security
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
     
