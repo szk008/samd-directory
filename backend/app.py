@@ -10,7 +10,7 @@ from backend.routes.doctor_self import doctor_self_bp
 
 def create_app():
     app = Flask(__name__, template_folder="../web/templates", static_folder="../web/static")
-   app.config.from_object(Config)
+    app.config.from_object(Config)
     
     # Enable CORS for API routes
     CORS(app, resources={r"/api/*": {"origins": "*"}})
