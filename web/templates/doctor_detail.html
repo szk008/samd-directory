@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ doctor.name }} – {{ doctor.specialty }} in {{ doctor.area }}</title>
+    <meta name="description"
+        content="Consult {{ doctor.name }}, {{ doctor.specialty }} with {{ doctor.experience_years }} years experience in {{ doctor.area }}.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+    <div style="max-width:800px; margin:20px auto; padding:20px;">
+        <a href="/" style="display:inline-block; margin-bottom:20px;">&larr; Back to Map</a>
+
+        <h1>{{ doctor.name }}</h1>
+        <p style="color:#666; font-size:1.1em;">{{ doctor.specialty }} • {{ doctor.experience_years }} years experience
+        </p>
+
+        <div style="background:#f9f9f9; padding:20px; border-radius:8px; margin-top:20px;">
+            <h2>Clinic Details</h2>
+            <p><strong>Clinic:</strong> {{ doctor.clinic_name or 'Private Practice' }}</p>
+            <p><strong>Area:</strong> {{ doctor.area }}</p>
+            <p><strong>City:</strong> {{ doctor.city }}</p>
+
+            <div style="margin-top:20px;">
+                <a href="tel:{{ doctor.phone }}"
+                    style="background:#0fb89b; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">Call
+                    Now</a>
+                {% if doctor.whatsapp %}
+                <a href="https://wa.me/{{ doctor.whatsapp }}"
+                    style="background:#25D366; color:white; padding:10px 20px; text-decoration:none; border-radius:5px; margin-left:10px;">WhatsApp</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

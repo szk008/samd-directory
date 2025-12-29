@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Doctor Directory</title>
+  <meta name="description" content="Find verified doctors near you on an interactive map.">
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+</head>
+
+<body>
+
+  <div style="text-align:center; padding: 10px 0; background: white;">
+    <img src="/static/img/logo.png" alt="SAMD Logo" style="height: 60px; max-width: 100%;">
+  </div>
+
+  <input id="search" placeholder="Search doctor, area, specialty">
+
+  <div id="loading" style="display:none; text-align:center; padding:10px;">Loading doctors…</div>
+  <div id="map"></div>
+  <div id="cards"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="/static/js/map.js"></script>
+</body>
+
+</html>

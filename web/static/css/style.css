@@ -1,0 +1,9 @@
+body { margin: 0; font-family: sans-serif; }
+#map { height: 60vh; width: 100%; }
+#cards { padding: 12px; max-width: 800px; margin: 0 auto; }
+.card { padding: 12px; margin-bottom: 8px; border-radius: 12px; background: #fff; border: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
+.card:hover { background: #f5f5f5; }
+#search { width: 100%; padding: 15px; font-size: 16px; box-sizing: border-box; border: none; border-bottom: 2px solid #eee; position: sticky; top: 0; z-index: 1000; }
+@media (max-width: 768px) {
+  #map { height: 50vh; }
+}
