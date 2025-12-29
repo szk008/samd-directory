@@ -31,24 +31,24 @@ def create_app():
         import logging
         logging.basicConfig(level=logging.INFO)
         app.logger.setLevel(logging.INFO)
+    
+    # Error handlers
+    @app.errorhandler(Exception)
+    def server_error(e):
+        app.logger.error(f"Unhandled exception: {str(e)}")
+        return jsonify({"error": "Server error"}), 500
+    
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "Not found"}), 404
+    
+    @app.errorhandler(403)
+    def forbidden(e):
+        return jsonify({"error": "Forbidden"}), 403
 
     return app
 
 app = create_app()
-
-@app.errorhandler(Exception)
-def server_error(e):
-    # Log the error
-    app.logger.error(f"Unhandled exception: {str(e)}")
-    return jsonify({"error": "Server error"}), 500
-
-@app.errorhandler(404)
-def not_found(e):
-    return jsonify({"error": "Not found"}), 404
-
-@app.errorhandler(403)
-def forbidden(e):
-    return jsonify({"error": "Forbidden"}), 403
 
 if __name__ == "__main__":
     app.run(debug=True)
