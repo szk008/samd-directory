@@ -12,9 +12,6 @@ class Doctor(db.Model):
     review_count = db.Column(db.Integer, default=0)
     verified = db.Column(db.Boolean, default=False)
     
-    # Link to User
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-
     phone = db.Column(db.String)  # Legacy - being replaced by personal_mobile
     whatsapp = db.Column(db.String)
     
