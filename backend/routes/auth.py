@@ -1,9 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect
 from functools import wraps
 from backend.database import db
 from backend.models.doctor import Doctor
 from backend.auth.otp import create_otp_session, verify_otp_session, generate_jwt, verify_jwt
+from backend.auth.magic_link import generate_magic_token, verify_magic_token, get_magic_link_url
+from backend.auth.google_auth import verify_google_token
+from backend.auth.account_linking import find_or_create_doctor, validate_required_fields
 from backend.services.otp_service import send_otp
+from backend.services.email_service import send_magic_link
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -68,7 +72,7 @@ def request_otp():
     return jsonify({
         "success": True,
         "session_id": session.id,
-        "message": "OTP sent successfully",
+        "message": "OTP sent successfully. Check WhatsApp or SMS.",
         "expires_in_minutes": 5
     })
 

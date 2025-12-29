@@ -8,6 +8,9 @@ from backend.routes.admin import admin_bp
 from backend.routes.auth import auth_bp
 from backend.routes.doctor_self import doctor_self_bp
 
+# Import unified auth extensions (Magic Link & Google OAuth)
+from backend.routes import auth_unified_extensions
+
 def create_app():
     app = Flask(__name__, template_folder="../web/templates", static_folder="../web/static")
     app.config.from_object(Config)

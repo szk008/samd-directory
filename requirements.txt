@@ -1,2 +1,3 @@
 PyJWT>=2.8.0
 flask-cors>=4.0.0
+google-auth>=4.0.0

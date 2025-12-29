@@ -1,0 +1,74 @@
+"""
+Unified Login Template
+Supports 3 authentication methods: OTP, Magic Link, Google OAuth
+Mobile number is REQUIRED for all doctors regardless of auth method.
+"""
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SAMD Directory</title>
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome to SAMD Directory</h1>
+                <p>Choose your preferred login method</p>
+            </div>
+
+            <!-- OTP Login Section -->
+            <div class="auth-method">
+                <h3>📱 Login with Mobile (OTP)</h3>
+                <form id="otp-form">
+                    <input type="tel" id="otp-mobile" placeholder="Mobile Number (+91)" required>
+                    <button type="submit" class="btn-primary">Send OTP</button>
+                </form>
+                <div id="otp-verify" class="hidden">
+                    <input type="text" id="otp-code" placeholder="Enter OTP" maxlength="6">
+                    <button id="verify-otp-btn" class="btn-primary">Verify OTP</button>
+                </div>
+            </div>
+
+            <div class="auth-divider">OR</div>
+
+            <!-- Magic Link Section -->
+            <div class="auth-method">
+                <h3>📧 Login with Email</h3>
+                <form id="magic-link-form">
+                    <input type="email" id="magic-email" placeholder="Email Address" required>
+                    <button type="submit" class="btn-secondary">Send Magic Link</button>
+                </form>
+                <p class="helper-text">We'll email you a secure login link</p>
+            </div>
+
+            <div class="auth-divider">OR</div>
+
+            <!-- Google OAuth Section -->
+            <div class="auth-method">
+                <h3>🔐 Continue with Google</h3>
+                <button id="google-login-btn" class="btn-google">
+                    <img src="/static/img/google-icon.svg" alt="Google">
+                    Continue with Google
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p>New here? <a href="/doctor/register">Register as a Doctor</a></p>
+                <p><a href="/">← Back to Home</a></p>
+            </div>
+
+            <div id="message-box" class="message hidden"></div>
+        </div>
+    </div>
+
+    <!-- Google OAuth Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="/static/js/unified-login.js"></script>
+</body>
+
+</html>

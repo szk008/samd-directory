@@ -23,6 +23,21 @@ class Config:
     MTALKZ_API_KEY = os.getenv('MTALKZ_API_KEY', '')  # Set this in environment!
     MTALKZ_SENDER_ID = os.getenv('MTALKZ_SENDER_ID', 'SAMDDR')
     
+    # Email Service (for Magic Links)
+    EMAIL_SERVICE_ENABLED = os.getenv('EMAIL_SERVICE_ENABLED', 'False') == 'True'
+    SMTP_HOST = os.getenv('SMTP_HOST', 'smtp.gmail.com')
+    SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+    SMTP_USER = os.getenv('SMTP_USER', '')
+    SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
+    
+    # Magic Link Configuration
+    MAGIC_LINK_EXPIRY_MINUTES = 15
+    MAGIC_LINK_BASE_URL = os.getenv('MAGIC_LINK_BASE_URL', 'http://localhost:5000')
+    
+    # Google OAuth
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
+    
     # Legacy SMS config (deprecated, using mTalkz now)
     SMS_GATEWAY_ENABLED = os.getenv('SMS_GATEWAY_ENABLED', 'False') == 'True'
     SMS_GATEWAY_API_KEY = os.getenv('SMS_GATEWAY_API_KEY', '')
