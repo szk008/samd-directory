@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from backend.config import Config
 from backend.database import db
 from backend.routes.search import search_bp
