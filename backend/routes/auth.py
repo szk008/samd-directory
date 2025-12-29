@@ -47,10 +47,10 @@ def request_otp():
         return jsonify({"error": "Mobile number required"}), 400
     
     # Get request metadata for abuse tracking
-   ip_address = request.remote_addr
+    ip_address = request.remote_addr
     user_agent = request.headers.get('User-Agent', '')
     
-   # Create OTP session
+    # Create OTP session
     session, result = create_otp_session(mobile_number, ip_address, user_agent)
     
     if not session:
